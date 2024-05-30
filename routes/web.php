@@ -1,24 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Post;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Illuminate\Support\Facades\File;
 
 Route::get('/', function () {
-    return view('posts');
+
+    $posts = Post::all();
+
+    return view('posts', [
+        'posts' => Post::all()
+    ]);
+
 });
 
 Route::get('posts/{post}', function ($slug) {
 
-    if (!file_exists($path = __DIR__ . "/../resources/posts/{$slug}.html")) {
-        return redirect('/');
-    }
+    return view('post', [
+        'post' => Post::findOrFail($slug)
+    ]);
 
-    $post = cache()->remember("posts.{$slug}", 3600, function () use ($path) {
-        var_dump('file_get_contents');
-        return file_get_contents($path);
-    });
-
-    return view('post', [ 'post' => $post ]);
-
-})->where('post', '[A-z_\-]+');
+});
 
 
